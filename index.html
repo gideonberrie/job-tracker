@@ -4,147 +4,145 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Job Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F7F5F0;
-    --surface: #FFFFFF;
-    --surface2: #F0EDE6;
-    --border: #E0DBD0;
-    --border2: #C8C2B5;
-    --text: #1A1815;
-    --text2: #6B6560;
-    --text3: #9C978F;
-    --accent: #2D5016;
-    --accent-light: #EBF2E3;
-    --accent2: #8B3A0F;
-    --accent2-light: #FAF0EA;
-    --red: #C0392B;
-    --red-light: #FDEDEB;
-    --amber: #9A6B00;
-    --amber-light: #FDF6E3;
-    --blue: #1A4A7A;
-    --blue-light: #EBF3FB;
-    --serif: 'DM Serif Display', Georgia, serif;
-    --sans: 'DM Sans', system-ui, sans-serif;
-    --mono: 'DM Mono', monospace;
-    --radius: 6px;
-    --radius-lg: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.5; }
-  .app { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 10; overflow-y: auto; }
-  .sidebar-logo { padding: 28px 24px 20px; border-bottom: 1px solid var(--border); }
-  .sidebar-logo h1 { font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.1; color: var(--text); }
-  .sidebar-logo span { display: block; font-size: 11px; color: var(--text3); font-family: var(--mono); letter-spacing: 0.05em; margin-top: 4px; }
-  .sidebar-nav { padding: 16px 12px; flex: 1; }
-  .nav-label { font-size: 10px; font-family: var(--mono); letter-spacing: 0.1em; color: var(--text3); padding: 0 12px; margin-bottom: 6px; margin-top: 16px; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius); cursor: pointer; font-size: 14px; color: var(--text2); border: none; background: none; width: 100%; text-align: left; transition: background 0.15s, color 0.15s; font-family: var(--sans); }
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
-  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-  .sidebar-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-  .btn-sm { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: var(--radius); border: 1px solid var(--border2); background: none; font-size: 13px; color: var(--text2); cursor: pointer; font-family: var(--sans); transition: background 0.15s; width: 100%; }
-  .btn-sm:hover { background: var(--surface2); }
-  .main { margin-left: 220px; flex: 1; padding: 40px 48px; max-width: calc(100vw - 220px); }
-  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
-  .page-title { font-family: var(--serif); font-size: 32px; font-weight: 400; }
-  .page-sub { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
-  .btn-add { display: flex; align-items: center; gap: 8px; padding: 11px 20px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--sans); transition: opacity 0.15s; flex-shrink: 0; }
-  .btn-add:hover { opacity: 0.85; }
-  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 36px; }
-  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
-  .metric-num { font-family: var(--serif); font-size: 36px; font-weight: 400; color: var(--text); line-height: 1; margin-bottom: 4px; }
-  .metric-label { font-size: 11px; color: var(--text3); font-family: var(--mono); letter-spacing: 0.04em; }
-  .kanban { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
-  .k-col { background: var(--surface2); border-radius: var(--radius-lg); padding: 14px; min-height: 300px; }
-  .k-col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .k-col-name { font-size: 11px; font-family: var(--mono); letter-spacing: 0.08em; color: var(--text2); text-transform: uppercase; }
-  .k-col-count { font-size: 11px; font-family: var(--mono); color: var(--text3); background: var(--border); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .k-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; }
-  .k-card:hover { border-color: var(--border2); transform: translateY(-1px); }
-  .k-card-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-  .k-card-co { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
-  .k-card-deadline { font-size: 11px; font-family: var(--mono); color: var(--text3); margin-top: 8px; }
-  .k-card-deadline.urgent { color: var(--red); font-weight: 500; }
-  .k-card-deadline.soon { color: var(--amber); }
-  .k-empty { text-align: center; color: var(--text3); font-size: 12px; padding: 24px 0; font-family: var(--mono); }
-  .badge { display: inline-block; font-size: 10px; font-family: var(--mono); letter-spacing: 0.04em; padding: 2px 7px; border-radius: 100px; font-weight: 500; }
-  .b-urban { background: var(--accent-light); color: var(--accent); }
-  .b-law { background: #EEF0FB; color: #2D3A9A; }
-  .b-politics { background: var(--amber-light); color: var(--amber); }
-  .b-journalism { background: var(--accent2-light); color: var(--accent2); }
-  .b-service { background: #EEF9F9; color: #1A6B6B; }
-  .b-jewish { background: #FBF0F7; color: #7A2D6B; }
-  .b-other { background: var(--surface2); color: var(--text2); }
-  .b-saved { background: var(--surface2); color: var(--text2); }
-  .b-applied { background: var(--blue-light); color: var(--blue); }
-  .b-interviewing { background: var(--amber-light); color: var(--amber); }
-  .b-offered { background: var(--accent-light); color: var(--accent); }
-  .b-closed { background: var(--red-light); color: var(--red); }
-  .deadline-list { display: flex; flex-direction: column; gap: 10px; }
-  .dl-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: border-color 0.15s; }
-  .dl-item:hover { border-color: var(--border2); }
-  .dl-days-wrap { min-width: 64px; text-align: center; flex-shrink: 0; }
-  .dl-days { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1; color: var(--text3); }
-  .dl-days.urgent { color: var(--red); }
-  .dl-days.soon { color: var(--amber); }
-  .dl-days.fresh { color: var(--accent); }
-  .dl-unit { font-size: 10px; font-family: var(--mono); color: var(--text3); letter-spacing: 0.06em; }
-  .dl-divider { width: 1px; background: var(--border); height: 36px; flex-shrink: 0; }
-  .dl-info { flex: 1; }
-  .dl-title { font-size: 15px; font-weight: 500; }
-  .dl-co { font-size: 13px; color: var(--text3); margin-top: 2px; }
-  .dl-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .dl-date { font-size: 12px; font-family: var(--mono); color: var(--text3); }
-  .field-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .fg-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .fg-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .fg-title { font-size: 15px; font-weight: 500; }
-  .fg-count { font-size: 12px; font-family: var(--mono); color: var(--text3); }
-  .fg-row { padding: 10px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.1s; }
-  .fg-row:last-child { border-bottom: none; }
-  .fg-row:hover { background: var(--surface2); }
-  .fg-row-title { font-size: 13px; font-weight: 500; }
-  .fg-row-co { font-size: 12px; color: var(--text3); }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,8,6,0.55); z-index: 100; align-items: center; justify-content: center; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: var(--radius-lg); width: 520px; max-width: 96vw; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); }
-  .modal-header { padding: 24px 28px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 1; }
-  .modal-header h2 { font-family: var(--serif); font-size: 22px; font-weight: 400; }
-  .modal-close { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 18px; line-height: 1; transition: background 0.15s; }
-  .modal-close:hover { background: var(--border); }
-  .modal-body { padding: 24px 28px; }
-  .modal-footer { padding: 16px 28px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; position: sticky; bottom: 0; background: var(--surface); }
-  .form-row { margin-bottom: 16px; }
-  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  label { display: block; font-size: 11px; font-family: var(--mono); letter-spacing: 0.06em; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; }
-  input, select, textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 14px; font-family: var(--sans); outline: none; transition: border-color 0.15s; }
-  input:focus, select:focus, textarea:focus { border-color: var(--border2); }
-  textarea { resize: vertical; min-height: 80px; }
-  .btn-save { padding: 10px 24px; background: var(--text); color: #fff; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--sans); transition: opacity 0.15s; }
-  .btn-save:hover { opacity: 0.85; }
-  .btn-cancel { padding: 10px 20px; background: none; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 14px; color: var(--text2); cursor: pointer; font-family: var(--sans); transition: background 0.15s; }
-  .btn-cancel:hover { background: var(--surface2); }
-  .btn-delete { padding: 10px 16px; background: none; border: none; font-size: 13px; color: var(--red); cursor: pointer; font-family: var(--sans); }
-  .btn-delete:hover { opacity: 0.7; }
-  .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 20px; }
-  .setting-row:last-child { border-bottom: none; }
-  .setting-label { font-size: 14px; font-weight: 500; }
-  .setting-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
-  .toggle { width: 40px; height: 22px; border-radius: 11px; background: var(--border); cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; border: none; }
-  .toggle.on { background: var(--accent); }
-  .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-  .toggle.on::after { left: 20px; }
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); font-family: var(--mono); font-size: 13px; }
-  .empty-state strong { display: block; font-family: var(--serif); font-size: 24px; font-weight: 400; color: var(--text2); margin-bottom: 8px; }
-  .sec-label { font-size: 11px; font-family: var(--mono); letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin: 20px 0 10px; }
-  .sec-label:first-child { margin-top: 0; }
-  .notif-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); display: inline-block; margin-left: 6px; vertical-align: 1px; }
-  .view { display: none; }
-  .view.active { display: block; }
+:root{--bg:#F7F5F0;--surface:#fff;--surface2:#F0EDE6;--border:#E0DBD0;--border2:#C8C2B5;--text:#1A1815;--text2:#6B6560;--text3:#9C978F;--accent:#2D5016;--accent-light:#EBF2E3;--red:#C0392B;--red-light:#FDEDEB;--amber:#9A6B00;--amber-light:#FDF6E3;--blue:#1A4A7A;--blue-light:#EBF3FB;--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:6px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10;overflow-y:auto}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo h1{font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.1}
+.sidebar-logo span{display:block;font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;margin-top:4px}
+.sidebar-nav{padding:16px 12px;flex:1}
+.nav-label{font-size:10px;font-family:var(--mono);letter-spacing:.1em;color:var(--text3);padding:0 12px;margin-bottom:6px;margin-top:16px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;font-size:14px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;font-family:var(--sans)}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:500}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.btn-sm{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r);border:1px solid var(--border2);background:none;font-size:13px;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:background .15s;width:100%}
+.btn-sm:hover{background:var(--surface2)}
+.main{margin-left:220px;flex:1;padding:40px 48px;max-width:calc(100vw - 220px)}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px}
+.page-title{font-family:var(--serif);font-size:32px;font-weight:400}
+.page-sub{font-size:13px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+.btn-add{display:flex;align-items:center;gap:8px;padding:11px 20px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s;flex-shrink:0}
+.btn-add:hover{opacity:.85}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px}
+.metric-num{font-family:var(--serif);font-size:36px;font-weight:400;line-height:1;margin-bottom:4px}
+.metric-label{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.04em}
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.k-col{background:var(--surface2);border-radius:var(--rl);padding:14px;min-height:300px}
+.k-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.k-col-name{font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--text2);text-transform:uppercase}
+.k-col-count{font-size:11px;font-family:var(--mono);color:var(--text3);background:var(--border);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.k-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,transform .1s}
+.k-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.k-card-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.k-card-co{font-size:12px;color:var(--text3);margin-bottom:8px}
+.k-card-deadline{font-size:11px;font-family:var(--mono);color:var(--text3);margin-top:8px}
+.k-card-deadline.urgent{color:var(--red);font-weight:500}
+.k-card-deadline.soon{color:var(--amber)}
+.k-empty{text-align:center;color:var(--text3);font-size:12px;padding:24px 0;font-family:var(--mono)}
+.badge{display:inline-block;font-size:10px;font-family:var(--mono);letter-spacing:.04em;padding:2px 7px;border-radius:100px;font-weight:500}
+.deadline-list{display:flex;flex-direction:column;gap:10px}
+.dl-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;display:flex;align-items:center;gap:20px;cursor:pointer;transition:border-color .15s}
+.dl-item:hover{border-color:var(--border2)}
+.dl-days-wrap{min-width:64px;text-align:center;flex-shrink:0}
+.dl-days{font-family:var(--serif);font-size:28px;font-weight:400;line-height:1;color:var(--text3)}
+.dl-days.urgent{color:var(--red)}.dl-days.soon{color:var(--amber)}.dl-days.fresh{color:var(--accent)}
+.dl-unit{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em}
+.dl-divider{width:1px;background:var(--border);height:36px;flex-shrink:0}
+.dl-info{flex:1}
+.dl-title{font-size:15px;font-weight:500}
+.dl-co{font-size:13px;color:var(--text3);margin-top:2px}
+.dl-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dl-date{font-size:12px;font-family:var(--mono);color:var(--text3)}
+.field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.fg-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.fg-title{font-size:15px;font-weight:500}
+.fg-count{font-size:12px;font-family:var(--mono);color:var(--text3)}
+.fg-row{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .1s}
+.fg-row:last-child{border-bottom:none}
+.fg-row:hover{background:var(--surface2)}
+.fg-row-title{font-size:13px;font-weight:500}
+.fg-row-co{font-size:12px;color:var(--text3)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,8,6,.55);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--rl);width:560px;max-width:96vw;max-height:90vh;overflow-y:auto;border:1px solid var(--border)}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-header h2{font-family:var(--serif);font-size:22px;font-weight:400}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--surface2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:18px;line-height:1;transition:background .15s}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:24px 28px}
+.modal-footer{padding:16px 28px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;bottom:0;background:var(--surface)}
+.form-row{margin-bottom:16px}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;font-size:11px;font-family:var(--mono);letter-spacing:.06em;color:var(--text3);margin-bottom:6px;text-transform:uppercase}
+input,select,textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--border2)}
+textarea{resize:vertical;min-height:70px}
+.btn-save{padding:10px 24px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .15s}
+.btn-save:hover{opacity:.85}
+.btn-cancel{padding:10px 20px;background:none;border:1px solid var(--border2);border-radius:var(--r);font-size:14px;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:background .15s}
+.btn-cancel:hover{background:var(--surface2)}
+.btn-delete{padding:10px 16px;background:none;border:none;font-size:13px;color:var(--red);cursor:pointer;font-family:var(--sans)}
+.btn-delete:hover{opacity:.7}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);font-family:var(--mono);font-size:13px}
+.empty-state strong{display:block;font-family:var(--serif);font-size:24px;font-weight:400;color:var(--text2);margin-bottom:8px}
+.sec-label{font-size:11px;font-family:var(--mono);letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin:20px 0 10px}
+.sec-label:first-child{margin-top:0}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;margin-left:6px;vertical-align:1px}
+.view{display:none}.view.active{display:block}
+
+/* URL scrape bar */
+.url-bar{display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.url-bar input{flex:1}
+.btn-fetch{padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans);white-space:nowrap;transition:opacity .15s}
+.btn-fetch:hover{opacity:.85}
+.btn-fetch:disabled{opacity:.5;cursor:default}
+.scrape-status{font-size:12px;font-family:var(--mono);color:var(--text3);margin-top:6px;min-height:16px}
+.scrape-status.ok{color:var(--accent)}
+.scrape-status.err{color:var(--red)}
+
+/* Field autocomplete */
+.field-wrap{position:relative}
+.field-suggestions{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);z-index:50;margin-top:2px;overflow:hidden;display:none}
+.field-suggestions.show{display:block}
+.field-suggestion{padding:8px 12px;font-size:13px;cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:8px}
+.field-suggestion:hover,.field-suggestion.active{background:var(--accent-light);color:var(--accent)}
+.field-suggestion .new-tag{font-size:10px;font-family:var(--mono);background:var(--accent-light);color:var(--accent);padding:1px 6px;border-radius:100px}
+
+/* Per-job reminders */
+.reminder-section{border:1px solid var(--border);border-radius:var(--r);padding:14px;background:var(--surface2)}
+.reminder-title{font-size:11px;font-family:var(--mono);letter-spacing:.06em;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+.reminder-options{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.reminder-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border2);border-radius:100px;font-size:12px;font-family:var(--mono);cursor:pointer;background:var(--surface);transition:all .15s;user-select:none}
+.reminder-chip input[type=checkbox]{display:none}
+.reminder-chip.checked{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.reminder-msg-wrap{margin-top:10px}
+.reminder-msg-wrap label{margin-bottom:4px}
+.reminder-msg-wrap textarea{min-height:52px;font-size:13px}
+.reminder-msg-placeholder{font-size:11px;font-family:var(--mono);color:var(--text3);margin-top:4px}
+
+/* Scrape spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:4px}
+
+/* Settings modal */
+.setting-row{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);gap:20px}
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:14px;font-weight:500}
+.setting-desc{font-size:12px;color:var(--text3);margin-top:2px}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;border:none}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{left:20px}
+
+/* Field color palette - cycles through these for new fields */
 </style>
 </head>
 <body>
@@ -234,19 +232,27 @@
       <button class="modal-close" onclick="closeModal('add-modal')">×</button>
     </div>
     <div class="modal-body">
+
+      <!-- URL scrape bar -->
+      <div class="form-row">
+        <label>Paste job URL to auto-fill</label>
+        <div class="url-bar">
+          <input id="f-url" placeholder="https://..." oninput="onUrlInput()">
+          <button class="btn-fetch" id="btn-fetch" onclick="scrapeUrl()" disabled>Fill from URL</button>
+        </div>
+        <div class="scrape-status" id="scrape-status"></div>
+      </div>
+
       <div class="form-row"><label>Job title</label><input id="f-title" placeholder="e.g. Policy Analyst, Urban Planner, Reporter"></div>
       <div class="form-2col">
         <div class="form-row"><label>Company / org</label><input id="f-company" placeholder="e.g. NECC, Hector Urban"></div>
-        <div class="form-row"><label>Field</label>
-          <select id="f-field">
-            <option value="Urban">Urban</option>
-            <option value="Law">Law</option>
-            <option value="Politics">Politics</option>
-            <option value="Journalism">Journalism</option>
-            <option value="Service">Service</option>
-            <option value="Jewish">Jewish</option>
-            <option value="Other">Other</option>
-          </select>
+        <div class="form-row">
+          <label>Field</label>
+          <div class="field-wrap">
+            <input id="f-field" placeholder="e.g. Urban, Law, Politics..." autocomplete="off"
+              oninput="onFieldInput()" onfocus="onFieldFocus()" onblur="onFieldBlur()" onkeydown="onFieldKey(event)">
+            <div class="field-suggestions" id="field-suggestions"></div>
+          </div>
         </div>
       </div>
       <div class="form-2col">
@@ -261,9 +267,28 @@
         </div>
         <div class="form-row"><label>Application deadline</label><input id="f-deadline" type="date"></div>
       </div>
-      <div class="form-row"><label>Job URL</label><input id="f-url" placeholder="https://..."></div>
       <div class="form-row"><label>Contact / connection</label><input id="f-contact" placeholder="e.g. Max Arnell · via Bates"></div>
       <div class="form-row"><label>Notes</label><textarea id="f-notes" placeholder="Why you're interested, what you know, next steps..."></textarea></div>
+
+      <!-- Per-job reminders -->
+      <div class="form-row">
+        <div class="reminder-section">
+          <div class="reminder-title">Reminders for this job</div>
+          <div class="reminder-options">
+            <label class="reminder-chip" id="chip-14"><input type="checkbox" value="14"> 2 weeks before</label>
+            <label class="reminder-chip" id="chip-7"><input type="checkbox" value="7"> 1 week before</label>
+            <label class="reminder-chip" id="chip-3"><input type="checkbox" value="3"> 3 days before</label>
+            <label class="reminder-chip" id="chip-1"><input type="checkbox" value="1"> 1 day before</label>
+            <label class="reminder-chip" id="chip-0"><input type="checkbox" value="0"> Day of</label>
+          </div>
+          <div class="reminder-msg-wrap">
+            <label>Custom reminder message (optional)</label>
+            <textarea id="f-reminder-msg" placeholder="e.g. &quot;Check in with Max before submitting&quot; — leave blank for default"></textarea>
+            <div class="reminder-msg-placeholder">Default: &quot;[Job title] at [Company] deadline approaching.&quot;</div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn-delete" id="btn-delete" style="display:none" onclick="deleteJob()">Delete</button>
@@ -275,65 +300,344 @@
   </div>
 </div>
 
-<!-- Settings Modal -->
+<!-- Global Settings Modal -->
 <div class="modal-overlay" id="settings-modal">
-  <div class="modal">
+  <div class="modal" style="width:480px">
     <div class="modal-header">
-      <h2>Reminder settings</h2>
+      <h2>Global reminder settings</h2>
       <button class="modal-close" onclick="closeModal('settings-modal')">×</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--text3);margin-bottom:20px;font-family:var(--mono)">Configure how you want to be notified about upcoming deadlines.</p>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:20px;font-family:var(--mono)">These defaults apply to all jobs. Individual jobs can override these in their own reminder settings.</p>
       <div class="setting-row">
-        <div><div class="setting-label">Browser notifications</div><div class="setting-desc">Pop-up alerts in Chrome when a deadline approaches. Requires browser permission.</div></div>
-        <button class="toggle on" id="t-browser" onclick="toggleSetting('browser')" role="switch" aria-checked="true"></button>
+        <div><div class="setting-label">Browser notifications</div><div class="setting-desc">Pop-up alerts in Chrome when a deadline approaches.</div></div>
+        <button class="toggle on" id="t-browser" onclick="toggleSetting('browser')" role="switch"></button>
       </div>
       <div class="setting-row">
-        <div><div class="setting-label">Email reminders</div><div class="setting-desc">Sent automatically via the Chrome extension (configure your email in the extension popup).</div></div>
-        <button class="toggle" id="t-email" onclick="toggleSetting('email')" role="switch" aria-checked="false"></button>
+        <div><div class="setting-label">Email reminders</div><div class="setting-desc">Sent via the Chrome extension (configure email in extension settings).</div></div>
+        <button class="toggle" id="t-email" onclick="toggleSetting('email')" role="switch"></button>
       </div>
-      <div class="setting-row">
-        <div><div class="setting-label">Remind me how many days before?</div></div>
-        <select id="remind-days" style="width:160px">
-          <option value="1">1 day before</option>
-          <option value="3" selected>3 days before</option>
-          <option value="7">1 week before</option>
-          <option value="14">2 weeks before</option>
-        </select>
+      <div class="setting-row" style="border-bottom:none">
+        <div><div class="setting-label">Default reminder schedule</div><div class="setting-desc">Which intervals to use for jobs that have no custom reminder set.</div></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <label class="reminder-chip" id="g-chip-14"><input type="checkbox" value="14"> 2 weeks before</label>
+        <label class="reminder-chip" id="g-chip-7"><input type="checkbox" value="7"> 1 week before</label>
+        <label class="reminder-chip" id="g-chip-3"><input type="checkbox" value="3" checked> 3 days before</label>
+        <label class="reminder-chip" id="g-chip-1"><input type="checkbox" value="1" checked> 1 day before</label>
+        <label class="reminder-chip" id="g-chip-0"><input type="checkbox" value="0"> Day of</label>
       </div>
     </div>
     <div class="modal-footer">
       <div style="margin-left:auto;display:flex;gap:10px">
         <button class="btn-cancel" onclick="closeModal('settings-modal')">Cancel</button>
-        <button class="btn-save" onclick="saveSettings()">Save</button>
+        <button class="btn-save" onclick="saveGlobalSettings()">Save</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const FIELDS = ['Urban','Law','Politics','Journalism','Service','Jewish','Other'];
+// ── Field color palette ──────────────────────────────
+const FIELD_PALETTES = [
+  {bg:'#EBF2E3',color:'#2D5016'},  // green
+  {bg:'#EEF0FB',color:'#2D3A9A'},  // blue
+  {bg:'#FDF6E3',color:'#9A6B00'},  // amber
+  {bg:'#FAF0EA',color:'#8B3A0F'},  // coral
+  {bg:'#EEF9F9',color:'#1A6B6B'},  // teal
+  {bg:'#FBF0F7',color:'#7A2D6B'},  // pink
+  {bg:'#F0EDE6',color:'#5F5E5A'},  // gray
+  {bg:'#FDEDEB',color:'#A32D2D'},  // red
+];
+
 const STATUSES = ['Saved','Applied','Interviewing','Offered','Closed'];
-const FCLS = {Urban:'b-urban',Law:'b-law',Politics:'b-politics',Journalism:'b-journalism',Service:'b-service',Jewish:'b-jewish',Other:'b-other'};
-const SCLS = {Saved:'b-saved',Applied:'b-applied',Interviewing:'b-interviewing',Offered:'b-offered',Closed:'b-closed'};
+const STATUS_CLS = {Saved:'b-saved',Applied:'b-applied',Interviewing:'b-interviewing',Offered:'b-offered',Closed:'b-closed'};
 
 let jobs = [];
-let settings = { browser: true, email: false, days: 3 };
-let editId = null;
+let globalSettings = { browser: true, email: false, defaultReminders: [3, 1] };
+let fieldColors = {}; // field name -> palette index
 let notifiedKeys = new Set();
+let editId = null;
+let fieldSuggestionIndex = -1;
 
+// ── Persistence ───────────────────────────────────────
 function load() {
   try { jobs = JSON.parse(localStorage.getItem('jt-jobs') || '[]'); } catch(e) { jobs = []; }
-  try { settings = { ...settings, ...JSON.parse(localStorage.getItem('jt-settings') || '{}') }; } catch(e) {}
+  try { globalSettings = { ...globalSettings, ...JSON.parse(localStorage.getItem('jt-settings') || '{}') }; } catch(e) {}
+  try { fieldColors = JSON.parse(localStorage.getItem('jt-field-colors') || '{}'); } catch(e) {}
   try { notifiedKeys = new Set(JSON.parse(localStorage.getItem('jt-notified') || '[]')); } catch(e) {}
 }
 
 function persist() { localStorage.setItem('jt-jobs', JSON.stringify(jobs)); }
 
+function persistFieldColors() { localStorage.setItem('jt-field-colors', JSON.stringify(fieldColors)); }
+
+// ── Field helpers ─────────────────────────────────────
+function getAllFields() {
+  const used = [...new Set(jobs.map(j => j.field).filter(Boolean))];
+  return used.sort();
+}
+
+function getFieldStyle(field) {
+  if (!field) return FIELD_PALETTES[6];
+  if (fieldColors[field] === undefined) {
+    // Assign next palette color
+    const used = Object.values(fieldColors);
+    let idx = 0;
+    while (used.includes(idx) && idx < FIELD_PALETTES.length) idx++;
+    if (idx >= FIELD_PALETTES.length) idx = used.length % FIELD_PALETTES.length;
+    fieldColors[field] = idx;
+    persistFieldColors();
+  }
+  return FIELD_PALETTES[fieldColors[field]] || FIELD_PALETTES[0];
+}
+
+function badge(text, field) {
+  const s = getFieldStyle(field || text);
+  return `<span class="badge" style="background:${s.bg};color:${s.color}">${esc(text)}</span>`;
+}
+
+function statusBadge(status) {
+  const map = {
+    Saved: {bg:'#F0EDE6',color:'#5F5E5A'},
+    Applied: {bg:'#EBF3FB',color:'#1A4A7A'},
+    Interviewing: {bg:'#FDF6E3',color:'#9A6B00'},
+    Offered: {bg:'#EBF2E3',color:'#2D5016'},
+    Closed: {bg:'#FDEDEB',color:'#A32D2D'},
+  };
+  const s = map[status] || map.Saved;
+  return `<span class="badge" style="background:${s.bg};color:${s.color}">${esc(status)}</span>`;
+}
+
+// ── Field autocomplete ────────────────────────────────
+function onFieldInput() {
+  fieldSuggestionIndex = -1;
+  showFieldSuggestions();
+}
+
+function onFieldFocus() { showFieldSuggestions(); }
+
+function onFieldBlur() {
+  setTimeout(() => {
+    document.getElementById('field-suggestions').classList.remove('show');
+  }, 150);
+}
+
+function showFieldSuggestions() {
+  const input = document.getElementById('f-field');
+  const box = document.getElementById('field-suggestions');
+  const val = input.value.trim().toLowerCase();
+  const all = getAllFields();
+
+  let matches = val
+    ? all.filter(f => f.toLowerCase().includes(val))
+    : all;
+
+  const items = [];
+
+  matches.forEach(f => {
+    items.push({ label: f, isNew: false });
+  });
+
+  // Show "Create new" option if typed something not in list
+  if (val && !all.find(f => f.toLowerCase() === val)) {
+    const capitalized = val.charAt(0).toUpperCase() + val.slice(1);
+    items.push({ label: capitalized, isNew: true });
+  }
+
+  if (!items.length) { box.classList.remove('show'); return; }
+
+  box.innerHTML = items.map((item, i) => `
+    <div class="field-suggestion" data-val="${esc(item.label)}" onclick="selectField('${esc(item.label)}')">
+      ${item.isNew ? `<span class="new-tag">new</span>` : ''}
+      ${esc(item.label)}
+    </div>
+  `).join('');
+
+  box.classList.add('show');
+}
+
+function onFieldKey(e) {
+  const box = document.getElementById('field-suggestions');
+  const items = box.querySelectorAll('.field-suggestion');
+  if (!box.classList.contains('show') || !items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    fieldSuggestionIndex = Math.min(fieldSuggestionIndex + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('active', i === fieldSuggestionIndex));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    fieldSuggestionIndex = Math.max(fieldSuggestionIndex - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('active', i === fieldSuggestionIndex));
+  } else if (e.key === 'Enter' && fieldSuggestionIndex >= 0) {
+    e.preventDefault();
+    selectField(items[fieldSuggestionIndex].dataset.val);
+  } else if (e.key === 'Escape') {
+    box.classList.remove('show');
+  }
+}
+
+function selectField(val) {
+  document.getElementById('f-field').value = val;
+  document.getElementById('field-suggestions').classList.remove('show');
+  fieldSuggestionIndex = -1;
+  // Ensure color assigned
+  getFieldStyle(val);
+}
+
+// ── URL scraping ──────────────────────────────────────
+function onUrlInput() {
+  const val = document.getElementById('f-url').value.trim();
+  document.getElementById('btn-fetch').disabled = !val.startsWith('http');
+  document.getElementById('scrape-status').textContent = '';
+  document.getElementById('scrape-status').className = 'scrape-status';
+}
+
+async function scrapeUrl() {
+  const url = document.getElementById('f-url').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('btn-fetch');
+  const status = document.getElementById('scrape-status');
+  btn.disabled = true;
+  status.innerHTML = '<span class="spin"></span>Fetching page...';
+  status.className = 'scrape-status';
+
+  try {
+    // Use a CORS proxy to fetch the page
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('Fetch failed');
+    const data = await res.json();
+    const html = data.contents;
+
+    // Parse and extract text
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Remove noise
+    ['script','style','nav','footer','header','noscript'].forEach(t =>
+      doc.querySelectorAll(t).forEach(el => el.remove())
+    );
+
+    // Get meaningful text
+    const mainEl = doc.querySelector('main,[role="main"],article,.job-description,.description,#job-description,.posting-description,.job-details');
+    let text = mainEl ? (mainEl.innerText || mainEl.textContent) : (doc.body.innerText || doc.body.textContent);
+    text = text.replace(/\s+/g,' ').trim().slice(0, 4000);
+
+    const pageTitle = doc.title || '';
+
+    status.innerHTML = '<span class="spin"></span>Analyzing with AI...';
+
+    await analyzeWithAI(text, url, pageTitle);
+
+    status.textContent = '✓ Auto-filled from page — review and edit as needed';
+    status.className = 'scrape-status ok';
+  } catch(e) {
+    console.error(e);
+    status.textContent = 'Could not fetch this page — fill in manually or try another URL.';
+    status.className = 'scrape-status err';
+  }
+
+  btn.disabled = false;
+}
+
+async function analyzeWithAI(pageText, url, pageTitle) {
+  const ANTHROPIC_KEY = localStorage.getItem('jt-api-key');
+
+  if (!ANTHROPIC_KEY) {
+    // Fallback: try to extract basic info from text heuristically
+    heuristicExtract(pageText, pageTitle);
+    document.getElementById('scrape-status').textContent = '⚠ No API key set — basic extraction only. Add an Anthropic key in Reminders settings for smarter auto-fill.';
+    document.getElementById('scrape-status').className = 'scrape-status err';
+    return;
+  }
+
+  const prompt = `Extract job listing information from this page. Return ONLY valid JSON with these exact fields:
+- title: job title string
+- company: organization name string  
+- deadline: application deadline as YYYY-MM-DD if found, else null
+- field: best guess category (e.g. Urban, Law, Politics, Journalism, Service, Nonprofit, Government, Tech, Finance, Other)
+- notes: one concise sentence describing the role
+
+Page URL: ${url}
+Page title: ${pageTitle}
+Content: ${pageText}
+
+JSON only, no markdown:`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!res.ok) throw new Error('API error');
+  const data = await res.json();
+  const text = data.content[0]?.text || '{}';
+  const job = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+  if (job.title) document.getElementById('f-title').value = job.title;
+  if (job.company) document.getElementById('f-company').value = job.company;
+  if (job.deadline) document.getElementById('f-deadline').value = job.deadline;
+  if (job.field) { document.getElementById('f-field').value = job.field; getFieldStyle(job.field); }
+  if (job.notes) document.getElementById('f-notes').value = job.notes;
+}
+
+function heuristicExtract(text, pageTitle) {
+  // Very basic: try to get title from page title
+  if (pageTitle) {
+    const clean = pageTitle.replace(/\s*[\|\-–]\s*.*/,'').trim();
+    if (clean && !document.getElementById('f-title').value) {
+      document.getElementById('f-title').value = clean;
+    }
+  }
+}
+
+// ── Reminder chips ────────────────────────────────────
+function setupReminderChips(selectedDays) {
+  [14,7,3,1,0].forEach(d => {
+    const chip = document.getElementById('chip-'+d);
+    const cb = chip.querySelector('input');
+    cb.checked = selectedDays.includes(d);
+    chip.classList.toggle('checked', cb.checked);
+    cb.onchange = () => chip.classList.toggle('checked', cb.checked);
+  });
+}
+
+function getSelectedReminderDays() {
+  return [14,7,3,1,0].filter(d => {
+    const chip = document.getElementById('chip-'+d);
+    return chip && chip.querySelector('input').checked;
+  });
+}
+
+function setupGlobalChips() {
+  [14,7,3,1,0].forEach(d => {
+    const chip = document.getElementById('g-chip-'+d);
+    if (!chip) return;
+    const cb = chip.querySelector('input');
+    cb.checked = (globalSettings.defaultReminders || [3,1]).includes(d);
+    chip.classList.toggle('checked', cb.checked);
+    cb.onchange = () => chip.classList.toggle('checked', cb.checked);
+  });
+}
+
+// ── Utilities ─────────────────────────────────────────
 function daysUntil(d) {
   if (!d) return null;
   const now = new Date(); now.setHours(0,0,0,0);
-  const dl = new Date(d + 'T00:00:00'); dl.setHours(0,0,0,0);
+  const dl = new Date(d+'T00:00:00'); dl.setHours(0,0,0,0);
   return Math.round((dl - now) / 86400000);
 }
 
@@ -343,9 +647,9 @@ function fmtDate(d) {
   return `${parseInt(m)}/${parseInt(day)}/${y.slice(2)}`;
 }
 
-function badge(text, cls) { return `<span class="badge ${cls}">${esc(text)}</span>`; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// ── Render ────────────────────────────────────────────
 function render() { updateMetrics(); renderFieldNav(); renderKanban(); renderDeadlines(); renderFields(); checkNotifications(); }
 
 function updateMetrics() {
@@ -359,7 +663,7 @@ function updateMetrics() {
     return d >= now && d <= week;
   }).length;
   document.getElementById('m-week').textContent = dueWeek;
-  document.getElementById('m-fields-count').textContent = new Set(jobs.map(j=>j.field)).size;
+  document.getElementById('m-fields-count').textContent = new Set(jobs.map(j=>j.field).filter(Boolean)).size;
   document.getElementById('pipeline-sub').textContent = `${jobs.length} opportunit${jobs.length===1?'y':'ies'} tracked`;
   document.getElementById('notif-dot').style.display = dueWeek > 0 ? 'inline-block' : 'none';
   document.getElementById('year-label').textContent = new Date().getFullYear();
@@ -368,12 +672,13 @@ function updateMetrics() {
 function renderFieldNav() {
   const nav = document.getElementById('field-nav');
   nav.innerHTML = '';
-  FIELDS.forEach(f => {
-    const count = jobs.filter(j=>j.field===f).length;
+  getAllFields().forEach(f => {
+    const count = jobs.filter(j => j.field === f).length;
     if (!count) return;
+    const s = getFieldStyle(f);
     const btn = document.createElement('button');
     btn.className = 'nav-item';
-    btn.innerHTML = `${badge(f, FCLS[f])}<span style="margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--text3)">${count}</span>`;
+    btn.innerHTML = `<span class="badge" style="background:${s.bg};color:${s.color};font-size:9px">${esc(f)}</span><span style="margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--text3)">${count}</span>`;
     btn.onclick = () => {
       document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
@@ -388,17 +693,15 @@ function renderKanban() {
   const board = document.getElementById('kanban-board');
   board.innerHTML = '';
   STATUSES.forEach(s => {
-    const col = document.createElement('div');
-    col.className = 'k-col';
-    const colJobs = jobs.filter(j=>j.status===s);
+    const col = document.createElement('div'); col.className = 'k-col';
+    const colJobs = jobs.filter(j => j.status === s);
     col.innerHTML = `<div class="k-col-header"><span class="k-col-name">${s}</span><span class="k-col-count">${colJobs.length}</span></div>`;
-    if (!colJobs.length) { col.innerHTML += `<div class="k-empty">empty</div>`; }
+    if (!colJobs.length) col.innerHTML += `<div class="k-empty">empty</div>`;
     colJobs.forEach(j => {
       const du = daysUntil(j.deadline);
-      const cls = du!==null && du>=0 && du<=3 ? 'urgent' : du!==null && du>=0 && du<=7 ? 'soon' : '';
-      const card = document.createElement('div');
-      card.className = 'k-card';
-      card.innerHTML = `<div class="k-card-title">${esc(j.title||'Untitled')}</div><div class="k-card-co">${esc(j.company||'')}</div>${badge(j.field, FCLS[j.field]||'b-other')}${j.deadline?`<div class="k-card-deadline ${cls}">${du<0?'Passed':du===0?'Due today':du+'d left'} · ${fmtDate(j.deadline)}</div>`:''}`;
+      const cls = du!=null&&du>=0&&du<=3?'urgent':du!=null&&du>=0&&du<=7?'soon':'';
+      const card = document.createElement('div'); card.className = 'k-card';
+      card.innerHTML = `<div class="k-card-title">${esc(j.title||'Untitled')}</div><div class="k-card-co">${esc(j.company||'')}</div>${badge(j.field||'Other',j.field)}${j.deadline?`<div class="k-card-deadline ${cls}">${du<0?'Passed':du===0?'Due today':du+'d left'} · ${fmtDate(j.deadline)}</div>`:''}`;
       card.onclick = () => openEdit(j.id);
       col.appendChild(card);
     });
@@ -417,9 +720,8 @@ function renderDeadlines() {
     withD.forEach(j => {
       const du = daysUntil(j.deadline);
       const cls = du<0?'':du<=3?'urgent':du<=7?'soon':'fresh';
-      const item = document.createElement('div');
-      item.className = 'dl-item';
-      item.innerHTML = `<div class="dl-days-wrap"><div class="dl-days ${cls}">${du===0?'!':Math.abs(du)}</div><div class="dl-unit">${du===0?'TODAY':du<0?'PAST':'DAYS LEFT'}</div></div><div class="dl-divider"></div><div class="dl-info"><div class="dl-title">${esc(j.title||'Untitled')}</div><div class="dl-co">${esc(j.company||j.field)}</div></div><div class="dl-meta">${badge(j.field,FCLS[j.field]||'b-other')}${badge(j.status,SCLS[j.status]||'b-saved')}<div class="dl-date">${fmtDate(j.deadline)}</div></div>`;
+      const item = document.createElement('div'); item.className = 'dl-item';
+      item.innerHTML = `<div class="dl-days-wrap"><div class="dl-days ${cls}">${du===0?'!':Math.abs(du)}</div><div class="dl-unit">${du===0?'TODAY':du<0?'PAST':'DAYS LEFT'}</div></div><div class="dl-divider"></div><div class="dl-info"><div class="dl-title">${esc(j.title||'Untitled')}</div><div class="dl-co">${esc(j.company||j.field||'')}</div></div><div class="dl-meta">${badge(j.field||'Other',j.field)}${statusBadge(j.status)}<div class="dl-date">${fmtDate(j.deadline)}</div></div>`;
       item.onclick = () => openEdit(j.id);
       list.appendChild(item);
     });
@@ -427,9 +729,8 @@ function renderDeadlines() {
   if (noD.length) {
     const sec = document.createElement('div'); sec.className='sec-label'; sec.textContent='No deadline set'; list.appendChild(sec);
     noD.forEach(j => {
-      const item = document.createElement('div');
-      item.className = 'dl-item'; item.style.opacity='0.6';
-      item.innerHTML = `<div class="dl-days-wrap"><div class="dl-days" style="font-size:18px">—</div><div class="dl-unit">NO DATE</div></div><div class="dl-divider"></div><div class="dl-info"><div class="dl-title">${esc(j.title||'Untitled')}</div><div class="dl-co">${esc(j.company||j.field)}</div></div><div class="dl-meta">${badge(j.field,FCLS[j.field]||'b-other')}${badge(j.status,SCLS[j.status]||'b-saved')}</div>`;
+      const item = document.createElement('div'); item.className='dl-item'; item.style.opacity='.6';
+      item.innerHTML = `<div class="dl-days-wrap"><div class="dl-days" style="font-size:18px">—</div><div class="dl-unit">NO DATE</div></div><div class="dl-divider"></div><div class="dl-info"><div class="dl-title">${esc(j.title||'Untitled')}</div><div class="dl-co">${esc(j.company||j.field||'')}</div></div><div class="dl-meta">${badge(j.field||'Other',j.field)}${statusBadge(j.status)}</div>`;
       item.onclick = () => openEdit(j.id);
       list.appendChild(item);
     });
@@ -439,18 +740,17 @@ function renderDeadlines() {
 function renderFields() {
   const grid = document.getElementById('field-grid');
   grid.innerHTML = '';
-  FIELDS.forEach(f => {
-    const fJobs = jobs.filter(j=>j.field===f);
+  getAllFields().forEach(f => {
+    const fJobs = jobs.filter(j => j.field === f);
     if (!fJobs.length) return;
-    const card = document.createElement('div');
-    card.className = 'fg-card'; card.id = 'fg-'+f;
-    card.innerHTML = `<div class="fg-header"><div class="fg-title">${badge(f,FCLS[f])} <span style="font-size:14px;font-weight:500;margin-left:6px">${f}</span></div><span class="fg-count">${fJobs.length}</span></div>`;
+    const s = getFieldStyle(f);
+    const card = document.createElement('div'); card.className='fg-card'; card.id='fg-'+f;
+    card.innerHTML = `<div class="fg-header"><div class="fg-title"><span class="badge" style="background:${s.bg};color:${s.color}">${esc(f)}</span> <span style="font-size:14px;font-weight:500;margin-left:6px">${esc(f)}</span></div><span class="fg-count">${fJobs.length}</span></div>`;
     fJobs.forEach(j => {
       const du = daysUntil(j.deadline);
-      const urgStr = du!==null&&du>=0&&du<=7?`<span style="color:var(--${du<=3?'red':'amber'})">${du}d</span>`:'';
-      const row = document.createElement('div');
-      row.className = 'fg-row';
-      row.innerHTML = `<div><div class="fg-row-title">${esc(j.title||'Untitled')}</div><div class="fg-row-co">${esc(j.company||'')}${j.company&&j.deadline?' · ':''}${urgStr||fmtDate(j.deadline)}</div></div>${badge(j.status,SCLS[j.status]||'b-saved')}`;
+      const urgStr = du!=null&&du>=0&&du<=7?`<span style="color:${du<=3?'var(--red)':'var(--amber)'}">${du}d</span>`:'';
+      const row = document.createElement('div'); row.className='fg-row';
+      row.innerHTML = `<div><div class="fg-row-title">${esc(j.title||'Untitled')}</div><div class="fg-row-co">${esc(j.company||'')}${j.company&&j.deadline?' · ':''}${urgStr||fmtDate(j.deadline)}</div></div>${statusBadge(j.status)}`;
       row.onclick = () => openEdit(j.id);
       card.appendChild(row);
     });
@@ -459,114 +759,178 @@ function renderFields() {
   if (!grid.children.length) grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><strong>Nothing here yet</strong>Add your first opportunity to get started.</div>`;
 }
 
+// ── Notifications ─────────────────────────────────────
 function checkNotifications() {
-  if (!settings.browser) return;
+  if (!globalSettings.browser) return;
   if (Notification.permission === 'default') Notification.requestPermission();
   if (Notification.permission !== 'granted') return;
+
   jobs.forEach(j => {
     if (!j.deadline || j.status === 'Closed') return;
     const du = daysUntil(j.deadline);
-    if (du !== null && du >= 0 && du <= settings.days) {
-      const key = j.id + '-' + j.deadline + '-' + settings.days;
-      if (!notifiedKeys.has(key)) {
-        new Notification('Deadline approaching — Job Tracker', { body: `${j.title||'Untitled'}${j.company?' at '+j.company:''} is due in ${du} day${du===1?'':'s'}.` });
-        notifiedKeys.add(key);
-        localStorage.setItem('jt-notified', JSON.stringify([...notifiedKeys]));
+    if (du === null || du < 0) return;
+
+    const reminders = (j.reminderDays && j.reminderDays.length) ? j.reminderDays : (globalSettings.defaultReminders || [3,1]);
+
+    reminders.forEach(r => {
+      if (du === r) {
+        const key = j.id + '-' + j.deadline + '-' + r;
+        if (!notifiedKeys.has(key)) {
+          const msg = j.reminderMsg || `${j.title||'A job'}${j.company?' at '+j.company:''} deadline approaching.`;
+          new Notification('Job Tracker — Deadline', { body: msg });
+          notifiedKeys.add(key);
+          localStorage.setItem('jt-notified', JSON.stringify([...notifiedKeys]));
+        }
       }
-    }
+    });
   });
 }
 
+// ── Navigation ────────────────────────────────────────
 function switchView(v, el) {
   document.querySelectorAll('.view').forEach(d=>d.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   if (el) { document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
 }
 
+// ── Modal: add/edit ───────────────────────────────────
 function openAdd() {
   editId = null;
   document.getElementById('modal-title').textContent = 'Add opportunity';
   document.getElementById('btn-delete').style.display = 'none';
-  ['title','company','url','contact','notes'].forEach(f=>document.getElementById('f-'+f).value='');
-  document.getElementById('f-field').value='Urban';
-  document.getElementById('f-status').value='Saved';
-  document.getElementById('f-deadline').value='';
+  ['title','company','field','contact','notes'].forEach(f => document.getElementById('f-'+f).value = '');
+  document.getElementById('f-url').value = '';
+  document.getElementById('f-status').value = 'Saved';
+  document.getElementById('f-deadline').value = '';
+  document.getElementById('f-reminder-msg').value = '';
+  document.getElementById('scrape-status').textContent = '';
+  document.getElementById('scrape-status').className = 'scrape-status';
+  document.getElementById('btn-fetch').disabled = true;
+  setupReminderChips(globalSettings.defaultReminders || [3,1]);
   document.getElementById('add-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('f-title').focus(),50);
+  setTimeout(() => document.getElementById('f-url').focus(), 50);
 }
 
 function openEdit(id) {
-  const j = jobs.find(x=>x.id===id); if(!j) return;
+  const j = jobs.find(x => x.id === id); if (!j) return;
   editId = id;
   document.getElementById('modal-title').textContent = 'Edit opportunity';
   document.getElementById('btn-delete').style.display = 'block';
-  document.getElementById('f-title').value = j.title||'';
-  document.getElementById('f-company').value = j.company||'';
-  document.getElementById('f-field').value = j.field||'Urban';
-  document.getElementById('f-status').value = j.status||'Saved';
-  document.getElementById('f-deadline').value = j.deadline||'';
-  document.getElementById('f-url').value = j.url||'';
-  document.getElementById('f-contact').value = j.contact||'';
-  document.getElementById('f-notes').value = j.notes||'';
+  document.getElementById('f-title').value = j.title || '';
+  document.getElementById('f-company').value = j.company || '';
+  document.getElementById('f-field').value = j.field || '';
+  document.getElementById('f-status').value = j.status || 'Saved';
+  document.getElementById('f-deadline').value = j.deadline || '';
+  document.getElementById('f-url').value = j.url || '';
+  document.getElementById('f-contact').value = j.contact || '';
+  document.getElementById('f-notes').value = j.notes || '';
+  document.getElementById('f-reminder-msg').value = j.reminderMsg || '';
+  document.getElementById('scrape-status').textContent = '';
+  document.getElementById('scrape-status').className = 'scrape-status';
+  document.getElementById('btn-fetch').disabled = !(j.url && j.url.startsWith('http'));
+  setupReminderChips(j.reminderDays || globalSettings.defaultReminders || [3,1]);
   document.getElementById('add-modal').classList.add('open');
 }
 
 function saveJob() {
   const title = document.getElementById('f-title').value.trim();
   if (!title) { document.getElementById('f-title').focus(); return; }
+  const field = document.getElementById('f-field').value.trim() || 'Other';
+  // Ensure field color assigned
+  getFieldStyle(field);
+
   const job = {
     id: editId || Date.now().toString(),
-    title, company: document.getElementById('f-company').value.trim(),
-    field: document.getElementById('f-field').value,
+    title,
+    company: document.getElementById('f-company').value.trim(),
+    field,
     status: document.getElementById('f-status').value,
     deadline: document.getElementById('f-deadline').value,
     url: document.getElementById('f-url').value.trim(),
     contact: document.getElementById('f-contact').value.trim(),
     notes: document.getElementById('f-notes').value.trim(),
-    saved: editId ? (jobs.find(x=>x.id===editId)||{}).saved||new Date().toISOString() : new Date().toISOString()
+    reminderDays: getSelectedReminderDays(),
+    reminderMsg: document.getElementById('f-reminder-msg').value.trim(),
+    saved: editId ? (jobs.find(x=>x.id===editId)||{}).saved || new Date().toISOString() : new Date().toISOString()
   };
-  if (editId) { const i=jobs.findIndex(x=>x.id===editId); if(i>-1) jobs[i]=job; else jobs.push(job); }
+
+  if (editId) { const i = jobs.findIndex(x=>x.id===editId); if (i>-1) jobs[i]=job; else jobs.push(job); }
   else jobs.push(job);
   persist(); closeModal('add-modal'); render();
 }
 
 function deleteJob() {
   if (!editId || !confirm('Delete this opportunity?')) return;
-  jobs = jobs.filter(x=>x.id!==editId);
+  jobs = jobs.filter(x => x.id !== editId);
   persist(); closeModal('add-modal'); render();
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+// ── Global settings ───────────────────────────────────
 function openSettings() {
-  document.getElementById('t-browser').className='toggle'+(settings.browser?' on':'');
-  document.getElementById('t-email').className='toggle'+(settings.email?' on':'');
-  document.getElementById('remind-days').value = settings.days;
+  document.getElementById('t-browser').className = 'toggle' + (globalSettings.browser?' on':'');
+  document.getElementById('t-email').className = 'toggle' + (globalSettings.email?' on':'');
+  setupGlobalChips();
   document.getElementById('settings-modal').classList.add('open');
 }
 
-function toggleSetting(k) { settings[k]=!settings[k]; openSettings(); }
+function toggleSetting(k) { globalSettings[k] = !globalSettings[k]; openSettings(); }
 
-function saveSettings() {
-  settings.days = parseInt(document.getElementById('remind-days').value);
-  localStorage.setItem('jt-settings', JSON.stringify(settings));
+function saveGlobalSettings() {
+  globalSettings.defaultReminders = [14,7,3,1,0].filter(d => {
+    const chip = document.getElementById('g-chip-'+d);
+    return chip && chip.querySelector('input').checked;
+  });
+  localStorage.setItem('jt-settings', JSON.stringify(globalSettings));
   closeModal('settings-modal');
 }
 
+// ── Export ────────────────────────────────────────────
 function exportCSV() {
   if (!jobs.length) { alert('No jobs to export yet.'); return; }
-  const cols = ['title','company','field','status','deadline','url','contact','notes','saved'];
-  const rows = [cols.join(','), ...jobs.map(j=>cols.map(c=>`"${(j[c]||'').replace(/"/g,'""')}"`).join(','))];
+  const cols = ['title','company','field','status','deadline','url','contact','notes','reminderDays','saved'];
+  const rows = [cols.join(','), ...jobs.map(j => cols.map(c => {
+    const v = c === 'reminderDays' ? (j[c]||[]).join(';') : (j[c]||'');
+    return `"${String(v).replace(/"/g,'""')}"`;
+  }).join(','))];
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
   a.download = 'job-tracker-'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
 }
 
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
+// ── Import from extension ─────────────────────────────
+function checkImport() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#import=')) return;
+  try {
+    const job = JSON.parse(decodeURIComponent(hash.slice(8)));
+    if (job && job.title) {
+      const exists = job.url && jobs.find(j => j.url === job.url);
+      if (exists) { render(); setTimeout(() => openEdit(exists.id), 100); }
+      else {
+        const newJob = { reminderDays: globalSettings.defaultReminders || [3,1], reminderMsg: '', ...job, id: job.id || Date.now().toString() };
+        jobs.push(newJob);
+        persist(); render();
+        setTimeout(() => openEdit(newJob.id), 100);
+      }
+      history.replaceState(null, '', window.location.pathname);
+    }
+  } catch(e) { console.error('Import error', e); }
+}
 
-load(); render();
+// ── Init ──────────────────────────────────────────────
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+load();
+checkImport();
+render();
 </script>
 </body>
 </html>
