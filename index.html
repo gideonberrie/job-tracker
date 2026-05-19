@@ -168,11 +168,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .editor-area strong,.editor-area b{font-weight:700}
 .editor-area em,.editor-area i{font-style:italic}
 .editor-area u{text-decoration:underline}
-/* Right-aligned dates: Mammoth renders these as borderless tables */
-.editor-area table{border-collapse:collapse;width:100%;margin:2px 0}
-.editor-area td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
-.editor-area td:last-child{text-align:right;white-space:nowrap}
-.editor-area th{font-weight:700;border:none;padding:0}
+/* Org + date flex rows */
+.editor-area div[style*="space-between"]{font-size:10.5pt;font-weight:700}
+/* Role lines (italic) sit directly under org row */
+.editor-area p>em:only-child,.editor-area p>i:only-child{display:block;font-style:italic;font-weight:400;margin:0 0 1px 0}
 .editor-area a{color:#1A1815;text-decoration:none}
 .editor-area img{max-width:100%;height:auto;margin:4px 0}
 .editor-actions{display:flex;align-items:center;gap:10px;padding:12px 0 0;border-top:1px solid var(--border);margin-top:12px}
@@ -1029,14 +1028,7 @@ function downloadPDF(){
   // Build a styled container for html2pdf to render
   const el=document.createElement('div');
   el.innerHTML=content;
-  el.style.cssText=`
-    font-family:'EB Garamond',Garamond,Georgia,serif;
-    font-size:11pt;
-    line-height:1.4;
-    color:#1A1815;
-    padding:0;
-    margin:0;
-  `;
+  el.style.cssText='font-family:Garamond,Georgia,serif;font-size:10.5pt;line-height:1.2;color:#1A1815;padding:0;margin:0;width:100%';
 
   const styleEl=document.createElement('style');
   styleEl.textContent=`
@@ -1057,6 +1049,10 @@ function downloadPDF(){
     table{border-collapse:collapse;width:100%;margin:2px 0}
     td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
     td:last-child{text-align:right;white-space:nowrap}
+    div[style*="space-between"]{display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 0 0;font-weight:700;font-size:10.5pt}
+    table{border-collapse:collapse;width:100%;margin:2px 0}
+    td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
+    td:last-child{text-align:right;white-space:nowrap}
     a{color:#1A1815;text-decoration:none}
   `;
 
@@ -1065,10 +1061,10 @@ function downloadPDF(){
   wrapper.appendChild(el);
 
   const opt={
-    margin:[11,13,11,13], // ~0.43 inch — matches your resume margins
+    margin:[11,13,11,13],
     filename: name+'.pdf',
-    image:{type:'jpeg',quality:0.99},
-    html2canvas:{scale:2,useCORS:true,letterRendering:true},
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{scale:1.5,useCORS:true,letterRendering:true,windowWidth:816},
     jsPDF:{unit:'mm',format:'letter',orientation:'portrait'},
     pagebreak:{mode:['avoid-all','css']}
   };
@@ -1365,17 +1361,81 @@ function wireEvents(){
               )
             }
           );
-          // Post-process: clean up empty paragraphs, fix spacing
-          let html=result.value||'';
-          // Wrap bare text nodes and fix list indents
-          html=html
-            .replace(/<p class="list-paragraph">/g,'<p style="margin-left:2em">')
-            .replace(/<p class="doc-subtitle">/g,'<p style="font-size:1.1em;color:#555;margin-bottom:1em">')
-            .replace(/<p>\s*<\/p>/g,'<p style="margin:0.3em 0">&nbsp;</p>'); // preserve blank lines
-          await saveContent(html||'<p>Could not extract text from this document.</p>');
-          if(result.messages&&result.messages.length){
-            console.log('Mammoth warnings:',result.messages);
-          }
+          // Post-process Mammoth output to match resume structure exactly
+          const tmp=document.createElement('div');
+          tmp.innerHTML=result.value||'';
+
+          let isFirst=true;
+          let isSecond=false;
+
+          tmp.querySelectorAll('p').forEach((p,idx)=>{
+            const text=(p.innerText||p.textContent||'').trim();
+            if(!text)return;
+
+            const hasOnlyStrong=p.childNodes.length>0&&
+              [...p.childNodes].every(n=>n.nodeType===3&&!n.textContent.trim()||n.nodeName==='STRONG'||n.nodeName==='BR');
+            const innerText=text.replace(/\s+/g,' ');
+            const strongText=p.querySelector('strong')?(p.querySelector('strong').textContent||'').trim():'';
+
+            // First element = name
+            if(isFirst){
+              const h=document.createElement('h1');
+              h.className='doc-title';
+              h.textContent=innerText.replace(/\*/g,'').trim();
+              p.replaceWith(h);
+              isFirst=false;isSecond=true;return;
+            }
+
+            // Second element = contact line
+            if(isSecond){
+              p.style.textAlign='center';
+              p.style.marginBottom='7px';
+              isSecond=false;return;
+            }
+
+            // Section header: entire paragraph is bold (strong wraps all text)
+            // e.g. EDUCATION, PROFESSIONAL EXPERIENCE
+            const fullText=p.textContent.trim();
+            const strongContent=(p.querySelector('strong')||{textContent:''}).textContent.trim();
+            const isSectionHeader=strongContent&&strongContent.replace(/\s/g,'')===fullText.replace(/\s/g,'')
+              &&fullText===fullText.toUpperCase()&&fullText.length>2&&fullText.length<80;
+
+            if(isSectionHeader){
+              const h=document.createElement('h2');
+              h.textContent=fullText;
+              p.replaceWith(h);return;
+            }
+
+            // Org line with tab + date: bold org name, tabs, then date on right
+            // Convert to a flex row so date is right-aligned
+            if(text.includes('\t')&&p.querySelector('strong')){
+              const parts=text.split(/\t+/);
+              const orgPart=parts[0].trim();
+              const datePart=parts[parts.length-1].trim();
+              if(datePart&&datePart!==orgPart){
+                const row=document.createElement('div');
+                row.style.cssText='display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 0 0';
+                // Reconstruct org with original bold/italic markup
+                const orgSpan=document.createElement('span');
+                orgSpan.innerHTML=p.innerHTML.split(/\t/)[0];
+                const dateSpan=document.createElement('span');
+                dateSpan.textContent=datePart;
+                row.appendChild(orgSpan);
+                row.appendChild(dateSpan);
+                p.replaceWith(row);return;
+              }
+            }
+
+            // Role lines that are only inside an org block (italic only = role)
+            // Leave as-is, Mammoth handles <em> correctly
+          });
+
+          // Clean up: remove empty paragraphs but keep spacers
+          let html=tmp.innerHTML
+            .replace(/<p>\s*<\/p>/g,'<p style="margin:0;line-height:0.5em">&nbsp;</p>')
+            .replace(/<p class="list-paragraph">/g,'<p style="margin-left:1.4em">');
+
+          await saveContent(html||'<p>Could not extract text.</p>');
         }catch(err){
           console.error(err);
           alert('Could not read this .docx file. Make sure it is a valid Word document (.docx).');
