@@ -1021,67 +1021,138 @@ function downloadPDF(){
   const name=document.getElementById('editor-name').value.trim()||'document';
   const content=document.getElementById('editor-area').innerHTML;
 
-  if(typeof html2pdf==='undefined'){
-    alert('PDF library is still loading, please try again in a moment.');return;
+  // Open a precisely-styled print window — more reliable than html2pdf for layout
+  const win=window.open('','_blank','width=900,height=700');
+  if(!win){alert('Please allow pop-ups for this site to export PDFs.');return}
+
+  // Use exact letter dimensions: 8.5in wide, margins 0.5in each side = 7.5in content
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${name}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{
+    width:8.5in;
+    font-family:'EB Garamond',Garamond,Georgia,serif;
+    font-size:10.5pt;
+    line-height:1.2;
+    color:#000;
+    background:#fff;
   }
+  body{
+    padding:0.5in 0.55in;
+  }
+  /* Name */
+  h1,h1.doc-title{
+    font-size:15pt;font-weight:700;
+    text-align:center;
+    letter-spacing:.05em;
+    margin:0 0 1px 0;
+  }
+  /* Contact line */
+  p.contact{text-align:center;margin:0 0 6px 0;font-size:10.5pt}
+  /* Section headers */
+  h2{
+    font-size:10.5pt;font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+    border-bottom:1.2px solid #000;
+    padding-bottom:0;
+    margin:7px 0 2px 0;
+  }
+  /* Org row: bold org name left, date right */
+  .org-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-weight:700;
+    font-size:10.5pt;
+    margin:3px 0 0 0;
+  }
+  .org-row .date{font-weight:700;white-space:nowrap;padding-left:8px}
+  /* Role (italic, under org) */
+  .role{font-style:italic;font-weight:400;margin:0 0 1px 0;font-size:10.5pt}
+  /* Body paragraphs */
+  p{margin:0 0 2px 0;font-size:10.5pt}
+  /* Bullets */
+  ul{padding-left:1.3em;margin:1px 0 2px 0;list-style-type:disc}
+  li{margin-bottom:1px;font-size:10.5pt}
+  strong,b{font-weight:700}
+  em,i{font-style:italic}
+  u{text-decoration:underline}
+  /* No borders on any table */
+  table{border-collapse:collapse;width:100%;margin:1px 0}
+  td{border:none;padding:0;vertical-align:top;font-size:10.5pt}
+  td:last-child{text-align:right;white-space:nowrap;padding-left:8px}
+  a{color:#000;text-decoration:none}
+  /* Print settings */
+  @media print{
+    html,body{width:100%}
+    @page{
+      size:letter portrait;
+      margin:0.5in 0.55in;
+    }
+    body{padding:0}
+  }
+</style>
+</head>
+<body>${_transformForPrint(content)}</body>
+</html>`);
 
-  // Build a styled container for html2pdf to render
-  const el=document.createElement('div');
-  el.innerHTML=content;
-  el.style.cssText='font-family:Garamond,Georgia,serif;font-size:10.5pt;line-height:1.2;color:#1A1815;padding:0;margin:0;width:100%';
+  win.document.close();
 
-  const styleEl=document.createElement('style');
-  styleEl.textContent=`
-    *{box-sizing:border-box}
-    body,div{font-family:Garamond,'EB Garamond',Georgia,serif;font-size:10.5pt;line-height:1.2;color:#1A1815}
-    h1,h1.doc-title{font-family:Garamond,Georgia,serif;font-size:15pt;font-weight:700;text-align:center;letter-spacing:.06em;margin:0 0 1px 0}
-    h2{font-family:Garamond,Georgia,serif;font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;border-bottom:1.5px solid #1A1815;padding-bottom:1px;margin:8px 0 3px 0}
-    h3{font-size:10.5pt;font-weight:700;margin:4px 0 0 0}
-    h4{font-size:10.5pt;font-weight:400;font-style:italic;margin:1px 0 0 0}
-    p{margin:0 0 2px 0;font-size:10.5pt}
-    p.doc-subtitle{text-align:center;margin-bottom:8px}
-    ul{padding-left:1.4em;margin:1px 0 3px 0;list-style-type:disc}
-    ol{padding-left:1.4em;margin:1px 0 3px 0}
-    li{margin-bottom:1px;font-size:10.5pt}
-    strong,b{font-weight:700}
-    em,i{font-style:italic}
-    u{text-decoration:underline}
-    table{border-collapse:collapse;width:100%;margin:2px 0}
-    td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
-    td:last-child{text-align:right;white-space:nowrap}
-    div[style*="space-between"]{display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 0 0;font-weight:700;font-size:10.5pt}
-    table{border-collapse:collapse;width:100%;margin:2px 0}
-    td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
-    td:last-child{text-align:right;white-space:nowrap}
-    a{color:#1A1815;text-decoration:none}
-  `;
-
-  const wrapper=document.createElement('div');
-  wrapper.appendChild(styleEl);
-  wrapper.appendChild(el);
-
-  const opt={
-    margin:[11,13,11,13],
-    filename: name+'.pdf',
-    image:{type:'jpeg',quality:0.98},
-    html2canvas:{scale:1.5,useCORS:true,letterRendering:true,windowWidth:816},
-    jsPDF:{unit:'mm',format:'letter',orientation:'portrait'},
-    pagebreak:{mode:['avoid-all','css']}
+  // Wait for fonts then print
+  win.onload=()=>{
+    setTimeout(()=>{
+      win.focus();
+      win.print();
+      // Close after print dialog handled
+      setTimeout(()=>win.close(),1000);
+    },800);
   };
 
-  const btn=document.getElementById('btn-editor-pdf');
-  btn.textContent='Generating...';
-  btn.style.opacity='.6';
+  // Fallback if onload doesn't fire
+  setTimeout(()=>{
+    if(!win.closed){win.focus();win.print();}
+  },2000);
+}
 
-  html2pdf().set(opt).from(wrapper).save().then(()=>{
-    btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg> Download PDF`;
-    btn.style.opacity='1';
-  }).catch(err=>{
-    console.error(err);
-    btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg> Download PDF`;
-    btn.style.opacity='1';
-    alert('PDF generation failed. Try saving as a smaller document.');
+// Transform editor HTML for clean print output
+function _transformForPrint(html){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=html;
+
+  // Fix flex org-row divs — make sure they render as proper rows
+  tmp.querySelectorAll('div').forEach(div=>{
+    if(div.style.justifyContent==='space-between'||div.style.cssText.includes('space-between')){
+      div.className='org-row';
+      div.removeAttribute('style');
+      // Last span = date
+      const spans=div.querySelectorAll('span');
+      if(spans.length>=2){
+        spans[spans.length-1].className='date';
+      }
+    }
   });
+
+  // Fix role paragraphs (em-only = role line)
+  tmp.querySelectorAll('p').forEach(p=>{
+    const children=[...p.childNodes].filter(n=>n.nodeType!==3||n.textContent.trim());
+    if(children.length===1&&(children[0].nodeName==='EM'||children[0].nodeName==='I')){
+      p.className='role';
+    }
+  });
+
+  // Fix contact line (second p after h1)
+  const h1=tmp.querySelector('h1');
+  if(h1&&h1.nextElementSibling&&h1.nextElementSibling.tagName==='P'){
+    h1.nextElementSibling.className='contact';
+  }
+
+  return tmp.innerHTML;
 }
 
 // ── Editor toolbar ────────────────────────────────────
@@ -1488,7 +1559,5 @@ render();
 </script>
 <!-- docx parser -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
-<!-- direct PDF export -->
-<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 </body>
 </html>
