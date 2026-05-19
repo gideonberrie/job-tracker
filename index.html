@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Job Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#F7F5F0;--surface:#fff;--surface2:#F0EDE6;--border:#E0DBD0;--border2:#C8C2B5;--text:#1A1815;--text2:#6B6560;--text3:#9C978F;--accent:#2D5016;--accent-light:#EBF2E3;--red:#C0392B;--red-light:#FDEDEB;--amber:#9A6B00;--amber-light:#FDF6E3;--blue:#1A4A7A;--blue-light:#EBF3FB;--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--r:6px;--rl:12px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -148,27 +148,33 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .etb-btn{padding:5px 8px;border:none;background:none;cursor:pointer;border-radius:4px;font-size:13px;color:var(--text2);font-family:var(--sans);transition:background .15s;display:flex;align-items:center}
 .etb-btn:hover{background:var(--surface2)}
 .etb-btn.active{background:var(--accent-light);color:var(--accent)}
-.editor-area{flex:1;border:1px solid var(--border);border-radius:var(--r);padding:24px;background:var(--surface);outline:none;font-size:15px;line-height:1.8;overflow-y:auto;min-height:400px}
+.editor-area{flex:1;border:1px solid var(--border);border-radius:var(--r);padding:36px 48px;background:var(--surface);outline:none;font-size:10.5pt;line-height:1.2;overflow-y:auto;min-height:400px;font-family:'EB Garamond',Garamond,Georgia,serif;color:#1A1815}
 .editor-area:focus{border-color:var(--border2)}
-.editor-area h1{font-family:var(--serif);font-size:26px;font-weight:400;margin-bottom:12px}
-.editor-area h2{font-family:var(--serif);font-size:20px;font-weight:400;margin-bottom:10px;margin-top:20px}
-.editor-area h1.doc-title{font-family:var(--serif);font-size:2em;font-weight:400;margin-bottom:4px;margin-top:0}
-.editor-area h1{font-family:var(--serif);font-size:1.6em;font-weight:400;margin-bottom:10px;margin-top:20px}
-.editor-area h2{font-family:var(--serif);font-size:1.3em;font-weight:400;margin-bottom:8px;margin-top:18px}
-.editor-area h3{font-size:1.1em;font-weight:600;margin-bottom:6px;margin-top:14px}
-.editor-area h4{font-size:1em;font-weight:600;margin-bottom:4px;margin-top:12px;font-style:italic}
-.editor-area p{margin-bottom:8px;min-height:1em}
-.editor-area ul{padding-left:2em;margin-bottom:10px;list-style-type:disc}
-.editor-area ol{padding-left:2em;margin-bottom:10px;list-style-type:decimal}
-.editor-area li{margin-bottom:3px}
-.editor-area strong,.editor-area b{font-weight:600}
+/* Name — centered, large */
+.editor-area h1,.editor-area h1.doc-title{font-family:'EB Garamond',Garamond,Georgia,serif;font-size:15pt;font-weight:700;margin:0 0 1px 0;text-align:center;letter-spacing:.06em}
+/* Contact line — centered, normal weight */
+.editor-area p.doc-subtitle,.editor-area h1+p,.editor-area h1.doc-title+p{text-align:center;margin-bottom:8px;font-size:10.5pt}
+/* Section headers — ALL CAPS, full-width rule below */
+.editor-area h2{font-family:'EB Garamond',Garamond,Georgia,serif;font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;border-bottom:1.5px solid #1A1815;padding-bottom:1px;margin:8px 0 3px 0}
+/* Org name / role lines */
+.editor-area h3{font-size:10.5pt;font-weight:700;margin:4px 0 0 0}
+.editor-area h4{font-size:10.5pt;font-weight:400;font-style:italic;margin:1px 0 0 0}
+/* Body text */
+.editor-area p{margin:0 0 2px 0;min-height:1em;font-size:10.5pt}
+/* Bullet points — tight */
+.editor-area ul{padding-left:1.4em;margin:1px 0 3px 0;list-style-type:disc}
+.editor-area ol{padding-left:1.4em;margin:1px 0 3px 0;list-style-type:decimal}
+.editor-area li{margin-bottom:1px;font-size:10.5pt}
+.editor-area strong,.editor-area b{font-weight:700}
 .editor-area em,.editor-area i{font-style:italic}
 .editor-area u{text-decoration:underline}
-.editor-area table{border-collapse:collapse;width:100%;margin-bottom:14px}
-.editor-area td,.editor-area th{border:1px solid var(--border2);padding:6px 10px;font-size:14px;vertical-align:top}
-.editor-area th{font-weight:600;background:var(--surface2)}
-.editor-area a{color:var(--blue);text-decoration:underline}
-.editor-area img{max-width:100%;height:auto;margin:8px 0}
+/* Right-aligned dates: Mammoth renders these as borderless tables */
+.editor-area table{border-collapse:collapse;width:100%;margin:2px 0}
+.editor-area td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
+.editor-area td:last-child{text-align:right;white-space:nowrap}
+.editor-area th{font-weight:700;border:none;padding:0}
+.editor-area a{color:#1A1815;text-decoration:none}
+.editor-area img{max-width:100%;height:auto;margin:4px 0}
 .editor-actions{display:flex;align-items:center;gap:10px;padding:12px 0 0;border-top:1px solid var(--border);margin-top:12px}
 .editor-actions .btn-save-doc{padding:9px 20px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans)}
 .editor-actions .btn-save-doc:hover{opacity:.85}
@@ -1015,52 +1021,71 @@ function deleteDoc(id){
 function downloadPDF(){
   const name=document.getElementById('editor-name').value.trim()||'document';
   const content=document.getElementById('editor-area').innerHTML;
-  const win=window.open('','_blank');
-  if(!win){alert('Please allow pop-ups for this site to download PDFs.');return}
-  win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>${esc(name)}</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:'DM Sans',Georgia,serif;
+
+  if(typeof html2pdf==='undefined'){
+    alert('PDF library is still loading, please try again in a moment.');return;
+  }
+
+  // Build a styled container for html2pdf to render
+  const el=document.createElement('div');
+  el.innerHTML=content;
+  el.style.cssText=`
+    font-family:'EB Garamond',Garamond,Georgia,serif;
     font-size:11pt;
-    line-height:1.6;
+    line-height:1.4;
     color:#1A1815;
-    max-width:680px;
-    margin:0 auto;
-    padding:48px 48px;
-  }
-  h1.doc-title{font-family:'DM Serif Display',Georgia,serif;font-size:22pt;font-weight:400;margin-bottom:4px;margin-top:0}
-  h1{font-family:'DM Serif Display',Georgia,serif;font-size:16pt;font-weight:400;margin-bottom:8px;margin-top:18px}
-  h2{font-family:'DM Serif Display',Georgia,serif;font-size:13pt;font-weight:400;margin-bottom:6px;margin-top:16px}
-  h3{font-size:11pt;font-weight:600;margin-bottom:4px;margin-top:14px}
-  h4{font-size:11pt;font-weight:600;font-style:italic;margin-bottom:4px;margin-top:12px}
-  p{margin-bottom:7px;min-height:0.8em}
-  ul{padding-left:2em;margin-bottom:10px;list-style-type:disc}
-  ol{padding-left:2em;margin-bottom:10px;list-style-type:decimal}
-  li{margin-bottom:3px}
-  strong,b{font-weight:600}
-  em,i{font-style:italic}
-  u{text-decoration:underline}
-  table{border-collapse:collapse;width:100%;margin-bottom:14px}
-  td,th{border:1px solid #C8C2B5;padding:5px 8px;font-size:10pt;vertical-align:top}
-  th{font-weight:600;background:#F0EDE6}
-  a{color:#1A4A7A;text-decoration:underline}
-  img{max-width:100%;height:auto;margin:8px 0}
-  @media print{
-    body{padding:0;max-width:100%}
-    @page{margin:2cm 2.5cm}
-  }
-</style>
-</head>
-<body>${content}</body>
-</html>`);
-  win.document.close();
-  setTimeout(()=>{win.focus();win.print();},600);
+    padding:0;
+    margin:0;
+  `;
+
+  const styleEl=document.createElement('style');
+  styleEl.textContent=`
+    *{box-sizing:border-box}
+    body,div{font-family:Garamond,'EB Garamond',Georgia,serif;font-size:10.5pt;line-height:1.2;color:#1A1815}
+    h1,h1.doc-title{font-family:Garamond,Georgia,serif;font-size:15pt;font-weight:700;text-align:center;letter-spacing:.06em;margin:0 0 1px 0}
+    h2{font-family:Garamond,Georgia,serif;font-size:10.5pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;border-bottom:1.5px solid #1A1815;padding-bottom:1px;margin:8px 0 3px 0}
+    h3{font-size:10.5pt;font-weight:700;margin:4px 0 0 0}
+    h4{font-size:10.5pt;font-weight:400;font-style:italic;margin:1px 0 0 0}
+    p{margin:0 0 2px 0;font-size:10.5pt}
+    p.doc-subtitle{text-align:center;margin-bottom:8px}
+    ul{padding-left:1.4em;margin:1px 0 3px 0;list-style-type:disc}
+    ol{padding-left:1.4em;margin:1px 0 3px 0}
+    li{margin-bottom:1px;font-size:10.5pt}
+    strong,b{font-weight:700}
+    em,i{font-style:italic}
+    u{text-decoration:underline}
+    table{border-collapse:collapse;width:100%;margin:2px 0}
+    td{border:none;padding:0;font-size:10.5pt;vertical-align:top}
+    td:last-child{text-align:right;white-space:nowrap}
+    a{color:#1A1815;text-decoration:none}
+  `;
+
+  const wrapper=document.createElement('div');
+  wrapper.appendChild(styleEl);
+  wrapper.appendChild(el);
+
+  const opt={
+    margin:[11,13,11,13], // ~0.43 inch — matches your resume margins
+    filename: name+'.pdf',
+    image:{type:'jpeg',quality:0.99},
+    html2canvas:{scale:2,useCORS:true,letterRendering:true},
+    jsPDF:{unit:'mm',format:'letter',orientation:'portrait'},
+    pagebreak:{mode:['avoid-all','css']}
+  };
+
+  const btn=document.getElementById('btn-editor-pdf');
+  btn.textContent='Generating...';
+  btn.style.opacity='.6';
+
+  html2pdf().set(opt).from(wrapper).save().then(()=>{
+    btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg> Download PDF`;
+    btn.style.opacity='1';
+  }).catch(err=>{
+    console.error(err);
+    btn.innerHTML=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg> Download PDF`;
+    btn.style.opacity='1';
+    alert('PDF generation failed. Try saving as a smaller document.');
+  });
 }
 
 // ── Editor toolbar ────────────────────────────────────
@@ -1322,7 +1347,12 @@ function wireEvents(){
             "p[style-name='Heading 2'] => h2:fresh",
             "p[style-name='Heading 3'] => h3:fresh",
             "p[style-name='Heading 4'] => h4:fresh",
-            "p[style-name='List Paragraph'] => p.list-paragraph:fresh",
+            "p[style-name='List Paragraph'] => li:fresh",
+            // Common resume-specific Word styles
+            "p[style-name='Name'] => h1.doc-title:fresh",
+            "p[style-name='Section Header'] => h2:fresh",
+            "p[style-name='Job Title'] => h3:fresh",
+            "p[style-name='Company'] => h3:fresh",
             "r[style-name='Strong'] => strong",
             "r[style-name='Emphasis'] => em",
           ];
@@ -1398,5 +1428,7 @@ render();
 </script>
 <!-- docx parser -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<!-- direct PDF export -->
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 </body>
 </html>
