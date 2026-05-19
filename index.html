@@ -404,7 +404,7 @@ textarea{resize:vertical;min-height:70px}
         </button>
       </div>
       <div class="doc-grid" id="doc-grid"></div>
-      <input type="file" id="doc-upload-input" accept=".txt,.md,.doc,.docx" style="display:none">
+      <input type="file" id="doc-upload-input" accept=".txt,.md,.docx,.pdf" style="display:none">
     </div>
     <div class="editor-wrap" id="editor-wrap">
       <div class="editor-toolbar">
@@ -1231,17 +1231,65 @@ function wireEvents(){
     });
   });
 
-  // File upload
-  document.getElementById('doc-upload-input').addEventListener('change',e=>{
+  // File upload — handles .txt, .md, .docx, .pdf
+  document.getElementById('doc-upload-input').addEventListener('change',async e=>{
     const file=e.target.files[0];if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      const content=ev.target.result;
-      const d={id:uid(),name:file.name.replace(/\.[^.]+$/,''),content:`<p>${content.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')}</p>`,saved:new Date().toISOString()};
-      docs.unshift(d);persistDocs();renderDocs();openEditor(d.id);
-    };
-    reader.readAsText(file);
+    const ext=file.name.split('.').pop().toLowerCase();
+    const name=file.name.replace(/\.[^.]+$/,'');
     e.target.value='';
+
+    async function saveContent(html){
+      const d={id:uid(),name,content:html,saved:new Date().toISOString()};
+      docs.unshift(d);persistDocs();renderDocs();openEditor(d.id);
+    }
+
+    function txtToHtml(text){
+      return'<p>'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>')+'</p>';
+    }
+
+    if(ext==='txt'||ext==='md'){
+      const reader=new FileReader();
+      reader.onload=ev=>saveContent(txtToHtml(ev.target.result));
+      reader.readAsText(file);
+
+    } else if(ext==='docx'){
+      // Use mammoth.js to convert docx -> html
+      if(typeof mammoth==='undefined'){
+        alert('Loading docx parser, please try again in a moment...');return;
+      }
+      const reader=new FileReader();
+      reader.onload=async ev=>{
+        try{
+          const result=await mammoth.convertToHtml({arrayBuffer:ev.target.result});
+          await saveContent(result.value||'<p>Could not extract text from this document.</p>');
+        }catch(err){
+          alert('Could not read this .docx file. Try saving it as a .txt file and uploading that.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+
+    } else if(ext==='pdf'){
+      // Use PDF.js to extract text page by page
+      if(typeof pdfjsLib==='undefined'){
+        alert('Loading PDF parser, please try again in a moment...');return;
+      }
+      try{
+        const arrayBuffer=await file.arrayBuffer();
+        const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+        let fullHtml='';
+        for(let i=1;i<=pdf.numPages;i++){
+          const page=await pdf.getPage(i);
+          const textContent=await page.getTextContent();
+          const pageText=textContent.items.map(item=>item.str).join(' ');
+          fullHtml+=`<p>${pageText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
+        }
+        await saveContent(fullHtml||'<p>Could not extract text from this PDF. It may be scanned or image-based.</p>');
+      }catch(err){
+        alert('Could not read this PDF. It may be password-protected or image-based (scanned).');
+      }
+    } else {
+      alert('Unsupported file type. Please upload a .txt, .md, .docx, or .pdf file.');
+    }
   });
 
   // Settings
@@ -1281,6 +1329,15 @@ wireEvents();
 setupFieldAutocomplete();
 checkImport();
 render();
+</script>
+<!-- docx parser -->
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<!-- PDF.js -->
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script>
+  if(typeof pdfjsLib!=='undefined'){
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  }
 </script>
 </body>
 </html>
