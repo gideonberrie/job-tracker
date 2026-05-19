@@ -152,10 +152,23 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .editor-area:focus{border-color:var(--border2)}
 .editor-area h1{font-family:var(--serif);font-size:26px;font-weight:400;margin-bottom:12px}
 .editor-area h2{font-family:var(--serif);font-size:20px;font-weight:400;margin-bottom:10px;margin-top:20px}
-.editor-area h3{font-size:16px;font-weight:500;margin-bottom:8px;margin-top:16px}
-.editor-area p{margin-bottom:10px}
-.editor-area ul,editor-area ol{padding-left:24px;margin-bottom:10px}
-.editor-area li{margin-bottom:4px}
+.editor-area h1.doc-title{font-family:var(--serif);font-size:2em;font-weight:400;margin-bottom:4px;margin-top:0}
+.editor-area h1{font-family:var(--serif);font-size:1.6em;font-weight:400;margin-bottom:10px;margin-top:20px}
+.editor-area h2{font-family:var(--serif);font-size:1.3em;font-weight:400;margin-bottom:8px;margin-top:18px}
+.editor-area h3{font-size:1.1em;font-weight:600;margin-bottom:6px;margin-top:14px}
+.editor-area h4{font-size:1em;font-weight:600;margin-bottom:4px;margin-top:12px;font-style:italic}
+.editor-area p{margin-bottom:8px;min-height:1em}
+.editor-area ul{padding-left:2em;margin-bottom:10px;list-style-type:disc}
+.editor-area ol{padding-left:2em;margin-bottom:10px;list-style-type:decimal}
+.editor-area li{margin-bottom:3px}
+.editor-area strong,.editor-area b{font-weight:600}
+.editor-area em,.editor-area i{font-style:italic}
+.editor-area u{text-decoration:underline}
+.editor-area table{border-collapse:collapse;width:100%;margin-bottom:14px}
+.editor-area td,.editor-area th{border:1px solid var(--border2);padding:6px 10px;font-size:14px;vertical-align:top}
+.editor-area th{font-weight:600;background:var(--surface2)}
+.editor-area a{color:var(--blue);text-decoration:underline}
+.editor-area img{max-width:100%;height:auto;margin:8px 0}
 .editor-actions{display:flex;align-items:center;gap:10px;padding:12px 0 0;border-top:1px solid var(--border);margin-top:12px}
 .editor-actions .btn-save-doc{padding:9px 20px;background:var(--text);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--sans)}
 .editor-actions .btn-save-doc:hover{opacity:.85}
@@ -404,7 +417,7 @@ textarea{resize:vertical;min-height:70px}
         </button>
       </div>
       <div class="doc-grid" id="doc-grid"></div>
-      <input type="file" id="doc-upload-input" accept=".txt,.md,.docx,.pdf" style="display:none">
+      <input type="file" id="doc-upload-input" accept=".txt,.md,.docx" style="display:none">
     </div>
     <div class="editor-wrap" id="editor-wrap">
       <div class="editor-toolbar">
@@ -1003,9 +1016,51 @@ function downloadPDF(){
   const name=document.getElementById('editor-name').value.trim()||'document';
   const content=document.getElementById('editor-area').innerHTML;
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(name)}</title><style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;font-size:14pt;line-height:1.7;color:#1A1815}h1,h2,h3{font-family:Georgia,serif;font-weight:400}@media print{body{margin:0}}</style></head><body>${content}</body></html>`);
+  if(!win){alert('Please allow pop-ups for this site to download PDFs.');return}
+  win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${esc(name)}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'DM Sans',Georgia,serif;
+    font-size:11pt;
+    line-height:1.6;
+    color:#1A1815;
+    max-width:680px;
+    margin:0 auto;
+    padding:48px 48px;
+  }
+  h1.doc-title{font-family:'DM Serif Display',Georgia,serif;font-size:22pt;font-weight:400;margin-bottom:4px;margin-top:0}
+  h1{font-family:'DM Serif Display',Georgia,serif;font-size:16pt;font-weight:400;margin-bottom:8px;margin-top:18px}
+  h2{font-family:'DM Serif Display',Georgia,serif;font-size:13pt;font-weight:400;margin-bottom:6px;margin-top:16px}
+  h3{font-size:11pt;font-weight:600;margin-bottom:4px;margin-top:14px}
+  h4{font-size:11pt;font-weight:600;font-style:italic;margin-bottom:4px;margin-top:12px}
+  p{margin-bottom:7px;min-height:0.8em}
+  ul{padding-left:2em;margin-bottom:10px;list-style-type:disc}
+  ol{padding-left:2em;margin-bottom:10px;list-style-type:decimal}
+  li{margin-bottom:3px}
+  strong,b{font-weight:600}
+  em,i{font-style:italic}
+  u{text-decoration:underline}
+  table{border-collapse:collapse;width:100%;margin-bottom:14px}
+  td,th{border:1px solid #C8C2B5;padding:5px 8px;font-size:10pt;vertical-align:top}
+  th{font-weight:600;background:#F0EDE6}
+  a{color:#1A4A7A;text-decoration:underline}
+  img{max-width:100%;height:auto;margin:8px 0}
+  @media print{
+    body{padding:0;max-width:100%}
+    @page{margin:2cm 2.5cm}
+  }
+</style>
+</head>
+<body>${content}</body>
+</html>`);
   win.document.close();
-  setTimeout(()=>{win.focus();win.print();},400);
+  setTimeout(()=>{win.focus();win.print();},600);
 }
 
 // ── Editor toolbar ────────────────────────────────────
@@ -1253,42 +1308,53 @@ function wireEvents(){
       reader.readAsText(file);
 
     } else if(ext==='docx'){
-      // Use mammoth.js to convert docx -> html
       if(typeof mammoth==='undefined'){
         alert('Loading docx parser, please try again in a moment...');return;
       }
       const reader=new FileReader();
       reader.onload=async ev=>{
         try{
-          const result=await mammoth.convertToHtml({arrayBuffer:ev.target.result});
-          await saveContent(result.value||'<p>Could not extract text from this document.</p>');
+          // Full style map: preserve Word paragraph styles as semantic HTML
+          const styleMap=[
+            "p[style-name='Title'] => h1.doc-title:fresh",
+            "p[style-name='Subtitle'] => p.doc-subtitle:fresh",
+            "p[style-name='Heading 1'] => h1:fresh",
+            "p[style-name='Heading 2'] => h2:fresh",
+            "p[style-name='Heading 3'] => h3:fresh",
+            "p[style-name='Heading 4'] => h4:fresh",
+            "p[style-name='List Paragraph'] => p.list-paragraph:fresh",
+            "r[style-name='Strong'] => strong",
+            "r[style-name='Emphasis'] => em",
+          ];
+          const result=await mammoth.convertToHtml(
+            {arrayBuffer:ev.target.result},
+            {
+              styleMap,
+              convertImage: mammoth.images.imgElement(img=>
+                img.read('base64').then(data=>({src:`data:${img.contentType};base64,${data}`}))
+              )
+            }
+          );
+          // Post-process: clean up empty paragraphs, fix spacing
+          let html=result.value||'';
+          // Wrap bare text nodes and fix list indents
+          html=html
+            .replace(/<p class="list-paragraph">/g,'<p style="margin-left:2em">')
+            .replace(/<p class="doc-subtitle">/g,'<p style="font-size:1.1em;color:#555;margin-bottom:1em">')
+            .replace(/<p>\s*<\/p>/g,'<p style="margin:0.3em 0">&nbsp;</p>'); // preserve blank lines
+          await saveContent(html||'<p>Could not extract text from this document.</p>');
+          if(result.messages&&result.messages.length){
+            console.log('Mammoth warnings:',result.messages);
+          }
         }catch(err){
-          alert('Could not read this .docx file. Try saving it as a .txt file and uploading that.');
+          console.error(err);
+          alert('Could not read this .docx file. Make sure it is a valid Word document (.docx).');
         }
       };
       reader.readAsArrayBuffer(file);
 
-    } else if(ext==='pdf'){
-      // Use PDF.js to extract text page by page
-      if(typeof pdfjsLib==='undefined'){
-        alert('Loading PDF parser, please try again in a moment...');return;
-      }
-      try{
-        const arrayBuffer=await file.arrayBuffer();
-        const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
-        let fullHtml='';
-        for(let i=1;i<=pdf.numPages;i++){
-          const page=await pdf.getPage(i);
-          const textContent=await page.getTextContent();
-          const pageText=textContent.items.map(item=>item.str).join(' ');
-          fullHtml+=`<p>${pageText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`;
-        }
-        await saveContent(fullHtml||'<p>Could not extract text from this PDF. It may be scanned or image-based.</p>');
-      }catch(err){
-        alert('Could not read this PDF. It may be password-protected or image-based (scanned).');
-      }
     } else {
-      alert('Unsupported file type. Please upload a .txt, .md, .docx, or .pdf file.');
+      alert('Unsupported file type. Please upload a .txt, .md, or .docx file.');
     }
   });
 
@@ -1332,12 +1398,5 @@ render();
 </script>
 <!-- docx parser -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
-<!-- PDF.js -->
-<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-<script>
-  if(typeof pdfjsLib!=='undefined'){
-    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-  }
-</script>
 </body>
 </html>
