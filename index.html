@@ -638,33 +638,6 @@ function load(){
   try{docs=JSON.parse(localStorage.getItem('jt-docs')||'[]')}catch(e){docs=[]}
   try{globalSettings={...globalSettings,...JSON.parse(localStorage.getItem('jt-settings')||'{}')}}catch(e){}
   try{fieldColors=JSON.parse(localStorage.getItem('jt-field-colors')||'{}')}catch(e){}
-
-  // Merge any jobs saved by the extension directly into chrome.storage
-  try{
-    if(typeof chrome!=='undefined'&&chrome.storage&&chrome.storage.local){
-      chrome.storage.local.get(['jt-jobs','jt-edu','jt-todos'],result=>{
-        let changed=false;
-        // Merge jobs from extension storage
-        try{
-          const extJobs=JSON.parse(result['jt-jobs']||'[]');
-          const existingIds=new Set(jobs.map(j=>j.id));
-          const newJobs=extJobs.filter(j=>!existingIds.has(j.id));
-          if(newJobs.length){jobs=[...jobs,...newJobs];changed=true;}
-        }catch(e){}
-        // Merge edu from extension storage
-        try{
-          const extEdu=JSON.parse(result['jt-edu']||'[]');
-          const existingIds=new Set(edu.map(j=>j.id));
-          const newEdu=extEdu.filter(j=>!existingIds.has(j.id));
-          if(newEdu.length){edu=[...edu,...newEdu];changed=true;}
-        }catch(e){}
-        if(changed){
-          persist(); // write merged data back to localStorage
-          render();  // refresh the UI
-        }
-      });
-    }
-  }catch(e){}
 }
 // Sync a key/value to the extension's storage so the background worker can read it
 function syncToExtension(key, value) {
