@@ -609,6 +609,8 @@ textarea{resize:vertical;min-height:70px}
         <button class="btn-cancel" id="btn-settings-cancel">Cancel</button>
         <button class="btn-save" id="btn-settings-save">Save</button>
       </div>
+      <button class="btn-cancel" id="btn-test-notif" style="margin-top:10px;width:100%;text-align:center">🔔 Send a test notification</button>
+      </div>
     </div>
   </div>
 </div>
@@ -636,10 +638,37 @@ function load(){
   try{docs=JSON.parse(localStorage.getItem('jt-docs')||'[]')}catch(e){docs=[]}
   try{globalSettings={...globalSettings,...JSON.parse(localStorage.getItem('jt-settings')||'{}')}}catch(e){}
   try{fieldColors=JSON.parse(localStorage.getItem('jt-field-colors')||'{}')}catch(e){}}
-function persist(){localStorage.setItem('jt-jobs',JSON.stringify(jobs));localStorage.setItem('jt-edu',JSON.stringify(edu))}
-function persistTodos(){localStorage.setItem('jt-todos',JSON.stringify(todos))}
-function persistDocs(){localStorage.setItem('jt-docs',JSON.stringify(docs))}
-function persistSettings(){localStorage.setItem('jt-settings',JSON.stringify(globalSettings))}
+// Sync a key/value to the extension's storage so the background worker can read it
+function syncToExtension(key, value) {
+  try {
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage(
+        { type: 'SYNC', key, value },
+        () => { if (chrome.runtime.lastError) {} } // silently ignore if extension not present
+      );
+    }
+  } catch(e) {}
+}
+
+function persist() {
+  const jStr = JSON.stringify(jobs);
+  const eStr = JSON.stringify(edu);
+  localStorage.setItem('jt-jobs', jStr);
+  localStorage.setItem('jt-edu', eStr);
+  syncToExtension('jt-jobs', jStr);
+  syncToExtension('jt-edu', eStr);
+}
+function persistTodos() {
+  const str = JSON.stringify(todos);
+  localStorage.setItem('jt-todos', str);
+  syncToExtension('jt-todos', str);
+}
+function persistDocs() { localStorage.setItem('jt-docs', JSON.stringify(docs)); }
+function persistSettings() {
+  const str = JSON.stringify(globalSettings);
+  localStorage.setItem('jt-settings', str);
+  syncToExtension('jt-settings', str);
+}
 function persistFieldColors(){localStorage.setItem('jt-field-colors',JSON.stringify(fieldColors))}
 
 // ── Utilities ─────────────────────────────────────────
@@ -1524,6 +1553,21 @@ function wireEvents(){
   document.getElementById('settings-modal-close').addEventListener('click',()=>closeOverlay('settings-modal'));
   document.getElementById('btn-settings-cancel').addEventListener('click',()=>closeOverlay('settings-modal'));
   document.getElementById('btn-settings-save').addEventListener('click',saveSettings);
+  document.getElementById('btn-test-notif').addEventListener('click',()=>{
+    if(Notification.permission!=='granted'){
+      alert('Enable browser notifications first using the toggle above.');return;
+    }
+    // Ask background worker to fire a test
+    try{
+      if(typeof chrome!=='undefined'&&chrome.runtime&&chrome.runtime.sendMessage){
+        chrome.runtime.sendMessage({type:'CHECK_NOW'},()=>{
+          if(chrome.runtime.lastError){}
+        });
+      }
+    }catch(e){}
+    // Also fire one directly as a sanity check
+    new Notification('Job Tracker — test',{body:'Notifications are working! You\'ll get reminders like this automatically.'});
+  });
   document.getElementById('t-browser').addEventListener('click',()=>{
     globalSettings.browser=!globalSettings.browser;
     document.getElementById('t-browser').classList.toggle('on',globalSettings.browser);
@@ -1556,6 +1600,13 @@ wireEvents();
 setupFieldAutocomplete();
 checkImport();
 render();
+// Push all data to extension storage so background worker is up to date
+setTimeout(()=>{
+  syncToExtension('jt-jobs', JSON.stringify(jobs));
+  syncToExtension('jt-edu', JSON.stringify(edu));
+  syncToExtension('jt-todos', JSON.stringify(todos));
+  syncToExtension('jt-settings', JSON.stringify(globalSettings));
+}, 500);
 </script>
 <!-- docx parser -->
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
